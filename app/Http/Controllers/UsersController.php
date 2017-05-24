@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 
 use App\Models\User;
 
+use Auth;
+
 class UsersController extends Controller
 {
     public function create(){
@@ -45,9 +47,11 @@ class UsersController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        //after we successfully create new user's record, we display a successful sign up prompt
+        //after we successfully create new user's record, we have the user signed in
+        Auth::login($user);//this method will get user who passed authentication signed in
+        //then  we display a successful sign up prompt
         session()->flash('success', 'Welcome to new world!');
-        /*flash() method will store data into current session, data includes a key and its values,
+        /*flash() method will store data into a session, data includes a key and its values,
         in this case, key is 'success', value is 'Welcoe~'
         According to nees, in different cases, we might store succcess, danger, warning and info in session_destroy
         So, we need to build html elements for these 4 differnt types in resources/views/shared/messages.blade.php */

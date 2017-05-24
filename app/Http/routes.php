@@ -30,3 +30,11 @@ Route::resource('users', 'UsersController');//'users' is the resource name, this
 // get('/users/{id}/edit', 'UsersController@edit')->name('users.edit');
 // patch('/users/{id}', 'UsersController@update')->name('users.update');
 // delete('/users/{id}', 'UsersController@destroy')->name('users.destroy');
+
+/*
+  Going following routes will create and destroy session  for user's login
+*/
+Route::get('login', 'SessionController@create')->name('login');//display the login page
+Route::post('login', 'SessionController@store')->name('login');//create session
+//above two routes have same route name, laravel will assign it with correct action according to its get/post method
+Route::delete('logout', 'SessionController@destroy')->name('logout');//destroy session

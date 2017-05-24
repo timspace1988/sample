@@ -1,12 +1,13 @@
-<!--
-     usually we config our database in config/database.php, so we need build a help file to provide configuration data for config/database.php,
-     this help file will help us assign different configeraton  data for our database connection according to the environment.
-     in our project, for local environment, we use MySql.
-     For Heroku environment, we use PostgreSql, in heroku's configeration, we have already created and set IS_IN_HEROKU=ture
-     We modified config/database.php, so that the default db connection will be adjusted according to our environment
-     check the default and pgsql part
- -->
+
  <?php
+ /*
+      usually we config our database in config/database.php, so we need build a help file to provide configuration data for config/database.php,
+      this help file will help us assign different configeraton  data for our database connection according to the environment.
+      in our project, for local environment, we use MySql.
+      For Heroku environment, we use PostgreSql, in heroku's configeration, we have already created and set IS_IN_HEROKU=ture
+      We modified config/database.php, so that the default db connection will be adjusted according to our environment
+      check the default and pgsql part
+  */
    function get_db_config(){
        if(getenv('IS_IN_HEROKU')){
            $url = parse_url(getenv("DATABASE_URL"));
