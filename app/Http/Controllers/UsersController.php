@@ -30,6 +30,7 @@ class UsersController extends Controller
     public function store(Request $request){
         //firstly, we need to validate user's input data
         //if not pass the validation, laravel will automatically redirect you to sign up page
+
         $this->validate($request, [
             'name' => 'required|max:50',
             'email' => 'required|email|unique:users|max:255',
