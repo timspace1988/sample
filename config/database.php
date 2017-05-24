@@ -1,5 +1,9 @@
 <?php
 
+//codes added by us
+$db_config = get_db_config();//get database configuration according to environment
+
+
 return [
 
     /*
@@ -26,7 +30,9 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    //'default' => env('DB_CONNECTION', 'mysql'),
+    //the default database connecton will be set using data contianed in $db_config which was given according to environment(loacal or heroku)
+    'default' => $db_config['connection'],//codes modified by us
 
     /*
     |--------------------------------------------------------------------------
@@ -64,12 +70,12 @@ return [
             'strict'    => false,
         ],
 
-        'pgsql' => [
+        'pgsql' => [//codes modified by us
             'driver'   => 'pgsql',
-            'host'     => env('DB_HOST', 'localhost'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', ''),
+            'host'     => $db_config['host'],
+            'database' => $db_config['database'],
+            'username' => $db_config['username'],
+            'password' => $db_config['password'],
             'charset'  => 'utf8',
             'prefix'   => '',
             'schema'   => 'public',

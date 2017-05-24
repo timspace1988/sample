@@ -32,3 +32,8 @@ $compiledPath = __DIR__.'/cache/compiled.php';
 if (file_exists($compiledPath)) {
     require $compiledPath;
 }
+
+/*
+we need it to automatically load our bootstrap/helpers.php File
+*/
+require __DIR__.'/helpers.php';
