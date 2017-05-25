@@ -10,6 +10,16 @@ use Auth;
 
 class SessionController extends Controller
 {
+    public function __construct(){
+        /*
+        only unsigned visiter(guset) can access sign in page
+        default redirected page for signed in user could be set in app/Http/Middleware/RedirectIfAuthenticate.php file
+        */
+        $this->middleware('guest', [
+            'only' => ['create']
+        ]);
+    }
+
     //return and display login page
     public function create(){
         return view('sessions.create');
@@ -36,7 +46,14 @@ class SessionController extends Controller
             session()->flash('success', 'Welcome back!');//Note: this session has no relationship with authentication,
             //Auth will store uer authentication in its own session
             //redirect to user's page
-            return redirect()->route('users.show', [Auth::user()]);//Auth::user() will get current login information
+            //return redirect()->route('users.show', [Auth::user()]);//Auth::user() will get current login information
+            return redirect()->intended(route('users.show', [Auth::user()]));
+            /*
+            note: redirect()->intended(default url) will redirect to our last request page(before we came to login page)
+            e.g. unsigned in user visit edit profile page, user will be redirected to login page, after he signed in,
+            user will be redirect back to edit profile page. if the last request is null, the default url will be used
+            */
+
         }else{
             //failed authentication
             session()->flash('danger', 'Sorry, incorrect email or password');

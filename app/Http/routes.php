@@ -19,7 +19,7 @@ Route::get('/', 'StaticPagesController@home')->name('home');
 Route::get('/help', 'StaticPagesController@help')->name('help');
 Route::get('/about', 'StaticPagesController@about')->name('about');
 
-Route::get('signup', 'UsersController@create')->name('signup');//name this route as 'signup'
+Route::get('/signup', 'UsersController@create')->name('signup');//name this route as 'signup'
 //to process this request, UsersController will call create action
 
 Route::resource('users', 'UsersController');//'users' is the resource name, this line equals to the follwing codes

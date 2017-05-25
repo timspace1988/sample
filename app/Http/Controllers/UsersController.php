@@ -13,6 +13,39 @@ use Auth;
 
 class UsersController extends Controller
 {
+    public function __construct(){
+        /*
+        middleware(param1, param2), first parameter is name of middleware, second parameter is the filter operation,
+        'auth' is an attribute of Auth middleware,
+        'only' means only when user comes with 'auth' can pass the filtering for edit and update request. e.g. guest(who is not logged in), will be rejected and redirected
+        'edit' and 'update' are action names
+
+        Defaultly, laravel will redirect to /auth/login page if user is not logged in. however, in our project, we use /login as our sign in page,
+        so, we need to modify it in app/Http/Middleware/Authenticate.php file
+        */
+        $this->middleware('auth', [
+            'only' => ['edit', 'update', 'destroy']
+        ]);
+
+
+        /*
+        only guest(unsigned visitor) could access sign up page
+        'guest' is an attribute of Auth middleware
+        default redirected page could be set in app/Http/Middleware/RedirectIfAuthenticate.php file
+        */
+        $this->middleware('guest', [
+            'only' => ['create']
+        ]);
+    }
+
+    //request and display users list page (usually this is for administrator)
+    public function index(){
+        //$users = User::all();//get all records in users table (this is actually not good, we should use pagination later )
+        $users = User::paginate(30);//use pagination and set each page having 30 records, on pages uder view, we need to render these record to get pagination links
+        return view('users.index', compact('users'));
+    }
+
+    //request and display signup page
     public function create(){
         return view('users.create');//return resources/views/create.blade.php
     }
@@ -36,7 +69,7 @@ class UsersController extends Controller
         $this->validate($request, [
             'name' => 'required|max:50',
             'email' => 'required|email|unique:users|max:255',
-            'password' => 'required'
+            'password' => 'required|confirmed|min:6'
         ]);
 
         //when passed the validation, we create user record in databases
@@ -60,4 +93,80 @@ class UsersController extends Controller
         //(after we create a new user record in database) then, we redirect to user's info page
         return redirect()->route('users.show', [$user]);
     }
+
+    //action of getting profile edit page
+    public function edit($id){
+        /*
+        //check if user has beed signed in
+        if(!Auth::check()){
+            //if user is not signed in, we redirect user to login page
+            return redirect('login');
+        }
+
+        as laravel has provided us Middleware to do this job, we will use it instead of above codes
+        check the construct function at the top
+
+
+        */
+
+        //find the user record we are going to edit
+        $user = User::findOrFail($id);
+
+        //now we need to check if the currently logged in user has authority to perform edit operation on $user
+        $this->authorize('update', $user);//'update' is the name of authorize policy(function)
+        /*
+        note: if the current user did not have the authority, it will throw a 403 HttpException to reject your request,
+        otherwise, it will continue executing the following codes
+        */
+
+        return view('users.edit', compact('user'));//compact('user') allow us to call $user directly
+    }
+
+    //action of updating user's profile
+    public function update($id, Request $request){
+        //firtly we validate user's input
+        $this->validate($request, [
+            'name' => 'required|max:50',
+            //'password' => 'required|confirmed|min:6',
+            'password' => 'confirmed|min:6'//as the password could be empty, here 'mid:6' will be ignored when it is empty
+        ]);
+
+        //if passed the validation, we trying find the record in database
+        $user = User::findOrFail($id);
+
+        //now check the current logged in user's authority before update the record $user
+        $this->authorize('update', $user);
+
+        /*
+        password could be empty, if user doesn't want to change it
+        so, to avoid save empty vale into databse, we need to check if user want to change it
+        */
+        $data = [];
+        $data['name'] = $request->name;
+        if($request->password){
+            $data['password'] = bcrypt($request->password);
+        }
+        //then we update the record with new data sent by request and display an message for successfully updating user profile
+        $user->update($data);
+        session()->flash('success', 'Your profile is updated.');
+
+        //Then we redirect to user's page
+        return redirect()->route('users.show', $id);
+    }
+
+    //action of deleting a user record
+    public function destroy($id){
+        $user = User::findOrFail($id);
+
+        //in order to prevent unsigned visitor send destroy request, we need add 'destroy' action to Auth middleware's auth attribute
+        //also, only administrator has the authority to delete oter user record
+        $this->authorize('destroy', $user);
+
+        $user->delete();
+        session()->flash('success', 'Selected user has been deleted.');
+        return back();//redirec to last operation page (here should be users list page)
+
+    }
+
+
 }

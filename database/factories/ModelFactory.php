@@ -11,11 +11,21 @@
 |
 */
 
+
+/*
+  we define factory here, then in seeder file, we can use factory() function to build fake records
+*/
+
 $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
+    $date_time = $faker->date . ' ' . $faker->time;
+    static $password;
     return [
         'name' => $faker->name,
         'email' => $faker->safeEmail,
-        'password' => bcrypt(str_random(10)),
+        'password' => $password ?: $password = bcrypt('secret'),
+        'is_admin' => false,
         'remember_token' => str_random(10),
+        'created_at' => $date_time,
+        'updated_at' => $date_time,
     ];
 });
