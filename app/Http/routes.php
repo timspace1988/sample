@@ -40,3 +40,13 @@ Route::post('login', 'SessionController@store')->name('login');//create session
 Route::delete('logout', 'SessionController@destroy')->name('logout');//destroy session
 
 Route::get('signup/confirm/{token}', 'UsersController@confirmEmail')->name('confirm_email');//this route is user's activation link
+
+/*
+  going following routes for password reseting (for user who forget the password)
+  Most controller work will be done by laravel in Auth/PasswordController, we just need to create password reset and update view pages
+  and set redirect link after successful password reset in Auth/PasswordController
+*/
+Route::get('password/email', 'Auth\PasswordController@getEmail')->name('password.reset');//display the reset email sending page
+Route::post('password/email', 'Auth\PasswordController@postEmail')->name('password.reset');//processing the reset email sending operation
+Route::get('password/reset/{token}', 'Auth\PasswordController@getReset')->name('password.edit');//display the password editing page
+Route::post('password/reset', 'Auth\PasswordController@postReset')->name('password.update');//processing the password updating request
