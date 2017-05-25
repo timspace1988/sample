@@ -42,17 +42,27 @@ class SessionController extends Controller
         //Auth's attempt method will automatically encrypt password input using bcrypt(), then compared it with record in database
         //laravel defaultly use users table to do authentication (users table automatically created by laravel )
         if(Auth::attempt($credentials, $request->has('remember'))){//the second parameter is a boolean type which decides if "remember me"
-            //passed authentication
-            session()->flash('success', 'Welcome back!');//Note: this session has no relationship with authentication,
-            //Auth will store uer authentication in its own session
-            //redirect to user's page
-            //return redirect()->route('users.show', [Auth::user()]);//Auth::user() will get current login information
-            return redirect()->intended(route('users.show', [Auth::user()]));
-            /*
-            note: redirect()->intended(default url) will redirect to our last request page(before we came to login page)
-            e.g. unsigned in user visit edit profile page, user will be redirected to login page, after he signed in,
-            user will be redirect back to edit profile page. if the last request is null, the default url will be used
-            */
+            //passed authentication, Auth will store uer authentication in its own session
+
+            //when uer passed authentication, we need to check if user has activated his account,
+            if(Auth::user()->activated){
+                session()->flash('success', 'Welcome back!');//Note: this session has no relationship with authentication,
+
+                //redirect to user's page
+                //return redirect()->route('users.show', [Auth::user()]);//Auth::user() will get current login information
+                return redirect()->intended(route('users.show', [Auth::user()]));
+                /*
+                note: redirect()->intended(default url) will redirect to our last request page(before we came to login page)
+                e.g. unsigned in user visit edit profile page, user will be redirected to login page, after he signed in,
+                user will be redirect back to edit profile page. if the last request is null, the default url will be used
+                */
+            }else{
+                //if user was not activated, we let user log out, redirect user to home page and display a prompt
+                Auth::logout();
+                session()->flash('warning', 'Your account is not activated, please check the confirmation letter in your email inbox.');
+                return redirect('/');
+            }
+
 
         }else{
             //failed authentication

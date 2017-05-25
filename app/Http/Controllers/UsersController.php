@@ -11,6 +11,8 @@ use App\Models\User;
 
 use Auth;
 
+use Mail;
+
 class UsersController extends Controller
 {
     public function __construct(){
@@ -80,17 +82,65 @@ class UsersController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
+        /*
+
         //after we successfully create new user's record, we have the user signed in
         Auth::login($user);//this method will get user who passed authentication signed in
         //then  we display a successful sign up prompt
         session()->flash('success', 'Welcome to new world!');
-        /*flash() method will store data into a session, data includes a key and its values,
-        in this case, key is 'success', value is 'Welcoe~'
-        According to nees, in different cases, we might store succcess, danger, warning and info in session_destroy
-        So, we need to build html elements for these 4 differnt types in resources/views/shared/messages.blade.php */
+        // flash() method will store data into a session, data includes a key and its values,
+        // in this case, key is 'success', value is 'Welcoe~'
+        // According to nees, in different cases, we might store succcess, danger, warning and info in session_destroy
+        // So, we need to build html elements for these 4 differnt types in resources/views/shared/messages.blade.php
 
 
         //(after we create a new user record in database) then, we redirect to user's info page
+        return redirect()->route('users.show', [$user]);
+
+        */
+
+        //when user registered, instead of leting user logged in and  redirecting to user's personal page,
+        //we send an confirmaton email, keep user not logged in and display an email confirmaton prompt
+        $this->sendEmailConfirmationTo($user);
+        session()->flash('success', 'A confirmaton letter has been sent to your email address, please check it and activate your account.');
+        return redirect('/');//redirect to home page
+
+
+    }
+
+    //action of sending user a confirmation letter
+    protected function sendEmailConfirmationTo($user){
+        $view = 'emails.confirm';
+        $data = compact('user');
+        $from = 'aufree@estgroupe.com';
+        $name = 'Aufree';
+        $to = $user->email;
+        $subject = 'Thank you for your register, please confirm your emails address.';
+
+        Mail::send($view, $data, function($message)use($from, $name, $to, $subject){
+            $message->from($from, $name)->to($to)->subject($subject);
+        });
+        /*
+          send() function has 3 parameters,
+          first parameter is the name of view template for email
+          second parameter is a data array which contains the user instance, which allows us to call $user in view page
+          third parameter is a callback function, we can define the email sender, receiver, email's subject
+          note: the instance $message is not given by us
+        */
+    }
+
+    //action of users activating their account
+    public function confirmEmail($token){
+        $user = User::where('activation_token', $token)->firstOrFail();
+        //where() was used to execute a select condition, it will return a 404 response if none was found
+
+        $user->activated = true;//if we found user record(with the same token sent from user's email) in database, we set the user as activated
+        $user->activation_token = null;//after user has been activated, we need to clear user's activation token
+        $user->save();
+
+        //Then we let the user logged in
+        Auth::login($user);
+        session()->flash('success', 'Congratulations, your account has been activated');
         return redirect()->route('users.show', [$user]);
     }
 

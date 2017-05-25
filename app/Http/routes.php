@@ -38,3 +38,5 @@ Route::get('login', 'SessionController@create')->name('login');//display the log
 Route::post('login', 'SessionController@store')->name('login');//create session
 //above two routes have same route name, laravel will assign it with correct action according to its get/post method
 Route::delete('logout', 'SessionController@destroy')->name('logout');//destroy session
+
+Route::get('signup/confirm/{token}', 'UsersController@confirmEmail')->name('confirm_email');//this route is user's activation link
