@@ -44,6 +44,8 @@ class UsersController extends Controller
     public function index(){
         //$users = User::all();//get all records in users table (this is actually not good, we should use pagination later )
         $users = User::paginate(30);//use pagination and set each page having 30 records, on pages uder view, we need to render these record to get pagination links
+        //User::paginate(30) will defaulty put the currently logged in user at the first place.
+
         return view('users.index', compact('users'));
     }
 
