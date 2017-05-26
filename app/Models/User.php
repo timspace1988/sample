@@ -29,6 +29,7 @@ class User extends Model implements AuthenticatableContract,
      * @var array
      */
     protected $fillable = ['name', 'email', 'password'];
+    //this will allow us to do MassAssignment 批量賦值， otherwise, we can not assign value to these fields
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -70,6 +71,19 @@ class User extends Model implements AuthenticatableContract,
     public function gravatar($size = '100'){
         $hash = md5(strtolower(trim($this->attributes['email'])));
         return "http://www.gravatar.com/avatar/$hash?s=$size";
+    }
+
+    //build relationship between User and statuses
+    public function statuses(){
+        return $this->hasMany(Status::class);
+        //relationship is: one user could have many statuses
+        //when executing $user->statuses(), it will return all Status records which belongs to this user
+    }
+
+    //get all statuses of this user
+    public function feed(){
+        return $this->statuses()
+                    ->orderBy('created_at', 'desc');
     }
 
 }

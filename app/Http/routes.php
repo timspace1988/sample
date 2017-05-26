@@ -50,3 +50,11 @@ Route::get('password/email', 'Auth\PasswordController@getEmail')->name('password
 Route::post('password/email', 'Auth\PasswordController@postEmail')->name('password.reset');//processing the reset email sending operation
 Route::get('password/reset/{token}', 'Auth\PasswordController@getReset')->name('password.edit');//display the password editing page
 Route::post('password/reset', 'Auth\PasswordController@postReset')->name('password.update');//processing the password updating request
+
+/* create and destroy status */
+//note:'statuses' is table name
+//resource() will generate all RESTful routes(check users above), but we only need to build and destroy status, so we use "only"
+Route::resource('statuses', 'StatusesController', ['only' => ['store', 'destroy']]);
+//above codes will generate
+// post('/statuses', 'StatusesController@store')->name('statuses.store');//prcessing the request of create new status
+// delete('/statuses/{id}', 'StatusesController@destroy')->name('statuses.destroy');//processing the request of deleting a status

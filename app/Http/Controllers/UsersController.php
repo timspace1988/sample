@@ -58,7 +58,12 @@ class UsersController extends Controller
         //Above was tested with no affecting, so, just use user_id
         //'show' receives 'id'
         $user = User::findOrFail($id);
-        return view('users.show', compact('user'));
+        //find all statuses posted by this user
+        $statuses = $user->statuses()
+                         ->orderBy('created_at', 'desc')
+                         ->paginate(30);//30 statuses on each page
+
+        return view('users.show', compact('user', 'statuses'));
         //compact will transform the user instance into an array(with data), and transit it to show page
         //We can directly use $user in pages under view forlder
     }

@@ -16,6 +16,7 @@
   we define factory here, then in seeder file, we can use factory() function to build fake records
 */
 
+//build our model factory for User
 $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
     $date_time = $faker->date . ' ' . $faker->time;
     static $password;
@@ -26,6 +27,16 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
         'is_admin' => false,
         'activated' =>true,
         'remember_token' => str_random(10),
+        'created_at' => $date_time,
+        'updated_at' => $date_time,
+    ];
+});
+
+//build our model factory for Status
+$factory->define(App\Models\Status::class, function(Faker\Generator $faker){
+    $date_time = $faker->date . ' ' . $faker->time;
+    return [
+        'content' => $faker->text(),
         'created_at' => $date_time,
         'updated_at' => $date_time,
     ];
