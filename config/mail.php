@@ -57,6 +57,7 @@ return [
 
     //'from' => ['address' => null, 'name' => null],
     'from' => ['address' => 'timspace1988@gmail.com', 'name' => 'Aufree'],
+    //we must give value to 'address' and 'name', otherwise, when we send password reset email, it will get a 500 error
 
     /*
     |--------------------------------------------------------------------------
