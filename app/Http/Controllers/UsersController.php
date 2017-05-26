@@ -131,12 +131,13 @@ class UsersController extends Controller
 
     //action of users activating their account
     public function confirmEmail($token){
-        echo $token;
+        //echo $token;
         $user = User::where('activation_token', $token)->firstOrFail();
+        //echo "found";
         //where() was used to execute a select condition, it will return a 404 response if none was found
 
         $user->activated = true;//if we found user record(with the same token sent from user's email) in database, we set the user as activated
-        $user->activation_token = null;//after user has been activated, we need to clear user's activation token
+        $user->activation_token = "";//after user has been activated, we need to clear user's activation token
         $user->save();
 
         //Then we let the user logged in
