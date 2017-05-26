@@ -131,6 +131,7 @@ class UsersController extends Controller
 
     //action of users activating their account
     public function confirmEmail($token){
+        echo $token;
         $user = User::where('activation_token', $token)->firstOrFail();
         //where() was used to execute a select condition, it will return a 404 response if none was found
 
