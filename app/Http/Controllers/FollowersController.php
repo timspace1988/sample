@@ -28,9 +28,9 @@ class FollowersController extends Controller
         }
 
         if(!Auth::user()->isFollowing($id)){
-            echo "after check<br>";
+
             Auth::user()->follow($id);
-            echo "followed<br>";
+
         }
 
         return redirect()->route('users.show', $id);

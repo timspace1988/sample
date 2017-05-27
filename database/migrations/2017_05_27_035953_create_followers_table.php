@@ -24,7 +24,9 @@ class CreateFollowersTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->index();
             $table->integer('follower_id')->index();
-            //$table->timestamps();
+            //$table->timestamps();//if add this line, on heroku environment,
+            //if you use PostgreSQL, it will not automatically insert timestamp to this field. When clicking follow, you will get a 500 error
+            //if you use MySQL, also won't automatically insert correct value, but it will insert a '00:00:00', so, it will be fine, no error
         });
     }
 
