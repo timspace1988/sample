@@ -125,6 +125,7 @@ class User extends Model implements AuthenticatableContract,
         if(!is_array($user_ids)){
             $user_ids = compact('user_ids');//compact will put a variable into an array
         }
+        echo "before follow<br>";
         $this->followings()->sync($user_ids, false);
         //$this->followings() will return a user collection
         //sync()will add new ids to this user's followings's id and save new records in joint table, second parameter is "if removes other ids"
@@ -141,6 +142,7 @@ class User extends Model implements AuthenticatableContract,
 
     //check if A following B
     public function isFollowing($user_id){
+        echo "before check<br>";
         return $this->followings->contains($user_id);//$this->followings returns a collecton containing all his followings
     }
 
