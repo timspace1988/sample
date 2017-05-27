@@ -118,7 +118,7 @@ class User extends Model implements AuthenticatableContract,
     public function followings(){
         return $this->belongsToMany(User::class, 'followers', 'follower_id', 'user_id');
         //this actually returns an instance of BelongsToMany, you can get all folowings by calling $this->followings
-        echo "get followings";
+
     }
 
     //follow other users
@@ -127,7 +127,9 @@ class User extends Model implements AuthenticatableContract,
             $user_ids = compact('user_ids');//compact will put a variable into an array
         }
         echo "before follow<br>";
-        $this->followings()->sync($user_ids, false);
+        $test = $this->followings()
+        echo "get followings";
+        $test->sync($user_ids, false);
         //$this->followings() will return a user collection
         //sync()will add new ids to this user's followings's id and save new records in joint table, second parameter is "if removes other ids"
         //attach() doing similar job, but attach() allows same id be added multiple times. So we don't use it
