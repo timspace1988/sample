@@ -118,6 +118,7 @@ class User extends Model implements AuthenticatableContract,
     public function followings(){
         return $this->belongsToMany(User::class, 'followers', 'follower_id', 'user_id');
         //this actually returns an instance of BelongsToMany, you can get all folowings by calling $this->followings
+        echo "get followings";
     }
 
     //follow other users
