@@ -10,6 +10,8 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
+use Auth;
+
 class User extends Model implements AuthenticatableContract,
                                     AuthorizableContract,
                                     CanResetPasswordContract
@@ -80,10 +82,66 @@ class User extends Model implements AuthenticatableContract,
         //when executing $user->statuses(), it will return all Status records which belongs to this user
     }
 
-    //get all statuses of this user
+    //get all statuses of this user's followings and himself
     public function feed(){
+        $user_ids = Auth::user()->followings->pluck('id')->toArray();
+        array_push($user_ids, Auth::user()->id);
+        return Status::whereIn('user_id', $user_ids)
+                       ->with('user')//width() is 預加載， check laravel document Eloquent:關聯 預加載
+                       ->orderBy('created_at', 'desc');
+
+        /*
+        //this only return current usrer's statuses
         return $this->statuses()
                     ->orderBy('created_at', 'desc');
+        */
+    }
+
+    /*
+      build relationship between users and follwers(also users), the "followers" table is a joint table
+      Defaultly, laravel will search for followers_users table, but we use "followers" in this project,
+      so we need to tell laravel
+    */
+
+    //return all fans of a user
+    public function followers(){
+        return $this->belongsToMany(User::Class, 'followers', 'user_id', 'follower_id');
+        //param1: name of returned(searched) Model
+        //param1: the joint(relationship) table we used in this project
+        //param3: the foreign key in joint table which refers to current user
+        //param3: the foreign key in joint table which refers to our acquired(searched) model instance
+
+        //this actually returns an instance of BelongsToMany, you can get all folowers by calling $this->followers
+    }
+
+    //return all users current user has followed
+    public function followings(){
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'user_id');
+        //this actually returns an instance of BelongsToMany, you can get all folowings by calling $this->followings
+    }
+
+    //follow other users
+    public function follow($user_ids){
+        if(!is_array($user_ids)){
+            $user_ids = compact('user_ids');//compact will put a variable into an array
+        }
+        $this->followings()->sync($user_ids, false);
+        //$this->followings() will return a user collection
+        //sync()will add new ids to this user's followings's id and save new records in joint table, second parameter is "if removes other ids"
+        //attach() doing similar job, but attach() allows same id be added multiple times. So we don't use it
+    }
+
+    //unfollow some users
+    public function  unfollow($user_ids){
+        if(!is_array($user_ids)){
+            $user_ids = compact('user_ids');
+        }
+        $this->followings()->detach($user_ids);
+    }
+
+    //check if A following B
+    public function isFollowing($user_id){
+        return $this->followings->contains($user_id);//$this->followings returns a collecton containing all his followings
     }
 
 }

@@ -9,10 +9,17 @@
           @include('shared._user_info', ['user' => $user])
           <!-- user include to acquire external page, assign the value for variable '$user' in user_info page by 'user'=>xx -->
         </section>
+        <section class="stats">
+          @include('shared._stats', ['user' => $user])
+        </section>
       </div>
     </div>
 
     <div class="col-md-12">
+      @if(Auth::check())
+        @include('users._follow_form')
+      @endif
+
       @if(count($statuses)>0)
         <ol class="statuses">
           @foreach($statuses as $status)

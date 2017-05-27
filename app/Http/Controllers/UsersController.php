@@ -26,7 +26,7 @@ class UsersController extends Controller
         so, we need to modify it in app/Http/Middleware/Authenticate.php file
         */
         $this->middleware('auth', [
-            'only' => ['edit', 'update', 'destroy']
+            'only' => ['edit', 'update', 'destroy', 'followings', 'followers']
         ]);
 
 
@@ -226,6 +226,23 @@ class UsersController extends Controller
         return back();//redirec to last operation page (here should be users list page)
 
     }
+
+    //action of getting followings list
+    public function followings($id){
+        $user = User::findOrFail($id);
+        $users = $user->followings()->paginate(30);
+        $title = 'Followings';
+        return view('users.show_follow', compact('users', 'title'));
+    }
+
+    //action of getting followers list
+    public function followers($id){
+        $user = User::findOrFail($id);
+        $users = $user->followers()->paginate(30);
+        $title = 'Followers';
+        return view('users.show_follow', compact('users', 'title'));
+    }
+
 
 
 }

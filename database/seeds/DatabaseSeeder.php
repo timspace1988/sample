@@ -17,7 +17,8 @@ class DatabaseSeeder extends Seeder
         // $this->call(UserTableSeeder::class);//'UserTableSeeder::class' will return the class name
         $this->call('UsersTableSeeder');
         $this->call('StatusesTableSeeder');
-
+        $this->call('FollowersTableSeeder');
+        //note: be careful about the order of generating simulated data
         Model::reguard();
     }
 }

@@ -58,3 +58,11 @@ Route::resource('statuses', 'StatusesController', ['only' => ['store', 'destroy'
 //above codes will generate
 // post('/statuses', 'StatusesController@store')->name('statuses.store');//prcessing the request of create new status
 // delete('/statuses/{id}', 'StatusesController@destroy')->name('statuses.destroy');//processing the request of deleting a status
+
+//followers and followings list page
+Route::get('/users/{id}/followings', 'UsersController@followings')->name('users.followings');
+Route::get('/users/{id}/followers', 'UsersController@followers')->name('users.followers');
+
+//follow and unfollow request
+Route::post('/users/followers/{id}', 'FollowersController@store')->name('followers.store');//follow
+Route::delete('/users/followers/{id}', 'FollowersController@destroy')->name('followers.destroy');//unfollow
