@@ -127,7 +127,7 @@ class User extends Model implements AuthenticatableContract,
             $user_ids = compact('user_ids');//compact will put a variable into an array
         }
         echo "before follow<br>";
-        $test = $this->followings()
+        $test = $this->followings();
         echo "get followings";
         $test->sync($user_ids, false);
         //$this->followings() will return a user collection
